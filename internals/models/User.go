@@ -6,7 +6,6 @@ import (
 	"html"
 	"io"
 	"strings"
-	"time"
 
 	"github.com/badoux/checkmail"
 	"github.com/go-playground/validator"
@@ -26,10 +25,10 @@ type User struct {
 }
 
 type SignUpInput struct {
-	Name            string `json:"name" binding:"required"`
-	Email           string `json:"email" binding:"required"`
-	Password        string `json:"password" binding:"required,min=8"`
-	PasswordConfirm string `json:"passwordConfirm" binding:"required"`
+	Name        string `json:"name" binding:"required"`
+	Email       string `json:"email" binding:"required"`
+	Password    string `json:"password" binding:"required,min=8"`
+	PhoneNumber string `json:"phone" binding:"required"`
 }
 
 type SignInInput struct {
@@ -38,13 +37,11 @@ type SignInInput struct {
 }
 
 type UserResponse struct {
-	ID        uint32    `json:"id,omitempty"`
-	Name      string    `json:"name,omitempty"`
-	Email     string    `json:"email,omitempty"`
-	Role      string    `json:"role,omitempty"`
-	Provider  string    `json:"provider"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uint32 `json:"id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Email       string `json:"email,omitempty"`
+	Password    string `json:"password,omitempty"`
+	PhoneNumber string `json:"phone,omitempty"`
 }
 
 func (u *User) FromJSON(r io.Reader) error {
@@ -71,6 +68,7 @@ func (user *User) BeforeSave(*gorm.DB) error {
 		return err
 	}
 	user.Password = string(hashedPassword)
+	user.Validate("")
 	return nil
 }
 
